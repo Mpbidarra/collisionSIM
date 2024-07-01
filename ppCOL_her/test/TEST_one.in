@@ -1,0 +1,41 @@
+################ ThePEG-repository ###############
+########### Herwig/Matchbox input file ###########
+
+
+##################################################
+## Initiation Basics
+##################################################
+
+# Collider type (proton-proton collider)
+read snippets/PPCollider.in
+
+set /Herwig/UnderlyingEvent/MPIHandler:
+
+# Center-of-mass energy
+cd /Herwig/Generators
+set EventGenerator:EventHandler:LuminosityFunction:Energy 5020.0
+
+
+##################################################
+## Process selection
+##################################################
+
+# Dijet QCD Matrix Element
+cd /Herwig/MatrixElements/
+insert SubProcess:MatrixElements[0] MEQCD2to2
+insert SubProcess:MatrixElements[1] MEHeavyQuark
+
+##################################################
+## Save the generator
+##################################################
+
+# HepMC Output 
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers[0] /Herwig/Analysis/HepMCFile
+#set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
+set /Herwig/Analysis/HepMCFile:Format GenEvent
+set /Herwig/Analysis/HepMCFile:Units GeV_mm
+
+# Create the run script 
+do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
+cd /Herwig/Generators
+saverun test_ONE EventGenerator
